@@ -1,21 +1,23 @@
 module LogBeta
 
+using SpecialFunctions
+
 
 """
-    lbeta(α::Float64, β::Float64, x::Float64)
+    logbeta(α::Float64, β::Float64, x::Float64)
 Logarithm of the incomplete Beta function,
     log B(α, β, x)
 """
-function Base.lbeta(α::Float64, β::Float64, x::Float64)
+function SpecialFunctions.logbeta(α::Float64, β::Float64, x::Float64)
     @assert α > 0 && β > 0 && 0 ≤ x ≤ 1
     if x == 0.0
         return 0.0
     elseif x == 1.0
-        return lbeta(α, β)
+        return logbeta(α, β)
     elseif x ≤ (α + 1) / (α + β + 2)
         return α * log(x) + β * log(1 - x) - log(α) + lbeta_cf(α, β, x)
     else
-        return log_sub(lbeta(α, β), lbeta(β, α, 1 - x))
+        return log_sub(logbeta(α, β), logbeta(β, α, 1 - x))
     end
 end
 
@@ -24,29 +26,29 @@ end
 
 
 """
-    lbeta(α::Float64, β::Float64, x₁::Float64, x₂::Float64)
+    logbeta(α::Float64, β::Float64, x₁::Float64, x₂::Float64)
 Logarithm of the incomplete Beta function,
     log B(α, β, x₁, x₂) = log(B(α, β, x₂) - B(α, β, x₁))
 """
 
-function Base.lbeta(α::Float64, β::Float64, x₁::Float64, x₂::Float64)
+function SpecialFunctions.logbeta(α::Float64, β::Float64, x₁::Float64, x₂::Float64)
     @assert α > 0 && β > 0 && 0 ≤ x₁ ≤ x₂ ≤ 1
     if x₁ == 0
-        return lbeta(α, β, x₂)
+        return logbeta(α, β, x₂)
     elseif x₂ == 1
-        return lbeta(β, α, 1 - x₁)
+        return logbeta(β, α, 1 - x₁)
     elseif α ≤ 1 || β ≤ 1
-        return log(betar(α, β, x₁, x₂)) + lbeta(α, β)
+        return log(betar(α, β, x₁, x₂)) + logbeta(α, β)
     end
 
     mode = (α - 1) / (α + β - 2)
 
     if x₂ ≤ mode
-        return log_sub(lbeta(α, β, x₂), lbeta(α, β, x₁))
+        return log_sub(logbeta(α, β, x₂), logbeta(α, β, x₁))
     elseif mode ≤ x₁
-        return log_sub(lbeta(β, α, 1 - x₁), lbeta(β, α, 1 - x₂))
+        return log_sub(logbeta(β, α, 1 - x₁), logbeta(β, α, 1 - x₂))
     else
-        return log_sub(lbeta(α, β), log_add(lbeta(α, β, x₁), lbeta(β, α, 1 - x₂)))
+        return log_sub(logbeta(α, β), log_add(logbeta(α, β, x₁), logbeta(β, α, 1 - x₂)))
     end
 end
 
@@ -62,7 +64,9 @@ Regularized incomplete Beta function,
 function betar end
 
 
-betar(α::Float64, β::Float64, x::Float64) = exp(lbeta(α, β, x) - lbeta(α, β))
+function betar(α::Float64, β::Float64, x::Float64)
+    exp(logbeta(α, β, x) - logbeta(α, β))
+end
 
 
 function betar(α::Float64, β::Float64, x₁::Float64, x₂::Float64)
@@ -140,30 +144,30 @@ function lbeta_cf(α::Float64, β::Float64, x::Float64)
 
     # Evaluates the continued fraction for the incomplete Beta function by the modified Lentz's method
 
-    const MAXIT::Int = 10^3
-    const ϵ::Float64 = 1e-10
-    const fpmin::Float64 = 1e-30
+    MAXIT = 10^3
+    ϵ = 1e-10
+    fpmin = 1e-30
 
     # some constant factors
-    const qab::Float64 = α + β
-    const qap::Float64 = α + 1.0
-    const qam::Float64 = α - 1.0
+    qab = α + β
+    qap = α + 1.0
+    qam = α - 1.0
 
     # first iteration of Lentz's method
-    C::Float64 = 1.0
-    D::Float64 = 1.0 - qab * x / qap
+    C = 1.0
+    D = 1.0 - qab * x / qap
     if abs(D) < fpmin; D = fpmin end
     D = 1.0 / D
     @assert D > 0
 
     # function estimate
-    log_cf::Float64 = log(D)
+    log_cf = log(D)
 
     for m = 1:MAXIT
         m2::Int = 2m
 
         # one step (the even one) of the recurrence. The index here is 2m
-        aa::Float64 = m * (β - m) * x / ((qam + m2) * (α + m2))
+        aa = m * (β - m) * x / ((qam + m2) * (α + m2))
 
         D = 1.0 + aa * D
         if abs(D) < fpmin; D = fpmin end
@@ -184,7 +188,7 @@ function lbeta_cf(α::Float64, β::Float64, x::Float64)
         C = 1.0 + aa / C
         if abs(C) < fpmin; C = fpmin end
 
-        log_del::Float64 = log(D) + log(C)
+        log_del = log(D) + log(C)
         log_cf += log_del
 
         if abs(log_del) < ϵ; return log_cf end
