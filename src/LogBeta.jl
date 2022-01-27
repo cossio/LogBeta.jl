@@ -33,7 +33,9 @@ end
 
 """
     logbeta(α::Float64, β::Float64, x₁::Float64, x₂::Float64)
+
 Logarithm of the incomplete Beta function,
+
     log B(α, β, x₁, x₂) = log(B(α, β, x₂) - B(α, β, x₁))
 """
 
@@ -67,7 +69,7 @@ end
 Computes the regularized incomplete Beta function,
 
     Br(α, β, x) = B(α, β, x) / B(α, β)
-    Br(α, β, x₂, x₁) = (B(α, β, x₂) - B(α, β, x₁)) / B(α, β) = Br(α, β, x₂) - Br(α, β, x₁)
+    Br(α, β, x₁, x₂) = (B(α, β, x₂) - B(α, β, x₁)) / B(α, β) = Br(α, β, x₂) - Br(α, β, x₁)
 """
 function betar end
 
