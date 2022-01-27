@@ -6,5 +6,6 @@
 Install with:
 
 ```julia
-pkg> add https://github.com/cossio/LogBeta.jl
+using Pkg
+Pkg.add(url="https://github.com/cossio/LogBeta.jl")
 ```
