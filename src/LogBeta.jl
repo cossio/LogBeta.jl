@@ -1,19 +1,25 @@
 module LogBeta
 
-using SpecialFunctions
+import SpecialFunctions
 
+"""
+    logbeta(α::Float64, β::Float64)
+
+Logarithm of the Beta function, log B(α, β).
+"""
+logbeta(α::Float64, β::Float64) = SpecialFunctions.logbeta(α, β)
 
 """
     logbeta(α::Float64, β::Float64, x::Float64)
-Logarithm of the incomplete Beta function,
-    log B(α, β, x)
+
+Logarithm of the incomplete Beta function, log B(α, β, x).
 """
-function SpecialFunctions.logbeta(α::Float64, β::Float64, x::Float64)
+function logbeta(α::Float64, β::Float64, x::Float64)
     @assert α > 0 && β > 0 && 0 ≤ x ≤ 1
     if x == 0.0
         return 0.0
     elseif x == 1.0
-        return logbeta(α, β)
+        return SpecialFunctions.logbeta(α, β)
     elseif x ≤ (α + 1) / (α + β + 2)
         return α * log(x) + β * log(1 - x) - log(α) + lbeta_cf(α, β, x)
     else
@@ -31,7 +37,7 @@ Logarithm of the incomplete Beta function,
     log B(α, β, x₁, x₂) = log(B(α, β, x₂) - B(α, β, x₁))
 """
 
-function SpecialFunctions.logbeta(α::Float64, β::Float64, x₁::Float64, x₂::Float64)
+function logbeta(α::Float64, β::Float64, x₁::Float64, x₂::Float64)
     @assert α > 0 && β > 0 && 0 ≤ x₁ ≤ x₂ ≤ 1
     if x₁ == 0
         return logbeta(α, β, x₂)
@@ -57,17 +63,15 @@ end
 """
     betar(α::Float64, β::Float64, x::Float64)
     betar(α::Float64, β::Float64, x₁::Float64, x₂::Float64)
-Regularized incomplete Beta function,
+
+Computes the regularized incomplete Beta function,
+
     Br(α, β, x) = B(α, β, x) / B(α, β)
     Br(α, β, x₂, x₁) = (B(α, β, x₂) - B(α, β, x₁)) / B(α, β) = Br(α, β, x₂) - Br(α, β, x₁)
 """
 function betar end
 
-
-function betar(α::Float64, β::Float64, x::Float64)
-    exp(logbeta(α, β, x) - logbeta(α, β))
-end
-
+betar(α::Float64, β::Float64, x::Float64) = exp(logbeta(α, β, x) - logbeta(α, β))
 
 function betar(α::Float64, β::Float64, x₁::Float64, x₂::Float64)
     @assert α > 0 && β > 0 && 0 ≤ x₁ ≤ x₂ ≤ 1
@@ -90,10 +94,9 @@ function betar(α::Float64, β::Float64, x₁::Float64, x₂::Float64)
     end
 end
 
-
-
 """
     log1exp(x::Float64)
+
 Stable computation of log(1 - exp(-x)), for x ≥ 0.
 """
 function log1exp(x::Float64)
@@ -101,9 +104,9 @@ function log1exp(x::Float64)
     if x > log(2); log(-expm1(-x)) else log1p(-exp(-x)) end
 end
 
-
 """
     log_sub(logx::Float64, logy::Float64)
+
 Stable computation of log(|x-y|) from log(x) and log(y)
 """
 function log_sub(logx::Float64, logy::Float64)
@@ -115,9 +118,9 @@ function log_sub(logx::Float64, logy::Float64)
     end
 end
 
-
 """
     log_add(logx::Float64, logy::Float64)
+
 Stable computation of log(x + y) from log(x) and log(y)
 """
 function log_add(logx::Float64, logy::Float64)
@@ -133,9 +136,10 @@ end
 
 """
     lbeta_cf(α::Float64, β::Float64, x::Float64)
+
 Computes the logarithm of the incomplete Beta function, by a continued fraction expansion.
 See Eq. 6.4.5 of Numerical Recipes 3rd Edition.
-Assumes that x ≤ (α + 1) / (α + β + 2)
+Assumes that x ≤ (α + 1) / (α + β + 2).
 This is an internal function, you are not supposed to call it.
 """
 function lbeta_cf(α::Float64, β::Float64, x::Float64)
