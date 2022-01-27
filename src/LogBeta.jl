@@ -1,6 +1,8 @@
 module LogBeta
 
+
 import SpecialFunctions
+
 
 """
     logbeta(α::Float64, β::Float64)
@@ -27,10 +29,6 @@ function logbeta(α::Float64, β::Float64, x::Float64)
     end
 end
 
-
-
-
-
 """
     logbeta(α::Float64, β::Float64, x₁::Float64, x₂::Float64)
 
@@ -38,7 +36,6 @@ Logarithm of the incomplete Beta function,
 
     log B(α, β, x₁, x₂) = log(B(α, β, x₂) - B(α, β, x₁))
 """
-
 function logbeta(α::Float64, β::Float64, x₁::Float64, x₂::Float64)
     @assert α > 0 && β > 0 && 0 ≤ x₁ ≤ x₂ ≤ 1
     if x₁ == 0
@@ -59,7 +56,6 @@ function logbeta(α::Float64, β::Float64, x₁::Float64, x₂::Float64)
         return log_sub(logbeta(α, β), log_add(logbeta(α, β, x₁), logbeta(β, α, 1 - x₂)))
     end
 end
-
 
 
 """
@@ -96,6 +92,7 @@ function betar(α::Float64, β::Float64, x₁::Float64, x₂::Float64)
     end
 end
 
+
 """
     log1exp(x::Float64)
 
@@ -105,6 +102,7 @@ function log1exp(x::Float64)
     @assert x ≥ 0
     if x > log(2); log(-expm1(-x)) else log1p(-exp(-x)) end
 end
+
 
 """
     log_sub(logx::Float64, logy::Float64)
@@ -120,6 +118,7 @@ function log_sub(logx::Float64, logy::Float64)
     end
 end
 
+
 """
     log_add(logx::Float64, logy::Float64)
 
@@ -133,7 +132,6 @@ function log_add(logx::Float64, logy::Float64)
         return logmax
     end
 end
-
 
 
 """
