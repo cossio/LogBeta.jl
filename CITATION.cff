@@ -1,0 +1,9 @@
+cff-version: 1.2.0
+message: "If you use this package, please cite it as below."
+authors:
+  - family-names: Fernandez-de-Cossio-Diaz
+    given-names: Jorge
+    orcid: https://orcid.org/0000-0002-4476-805X
+title: "LogBeta.jl"
+version: 0.2.0
+date-released: 2022-01-28
